@@ -1,0 +1,41 @@
+import tkinter
+import tkinter.filedialog
+import tensorflow as tf
+import numpy as np
+from PIL import Image, ImageTk
+
+top = tkinter.Tk()
+top.title = 'new'
+top.geometry('640x480')
+
+# 选择图片
+def choose_fiel():
+    selectFileName = tkinter.filedialog.askopenfilename(title='选择文件')  # 选择文件
+    e.set(selectFileName)
+    load = Image.open(selectFileName)
+    render = ImageTk.PhotoImage(load)
+    img = tkinter.Label(image=render)
+    img.image = render
+    img.place(x=200, y=100)
+    start_shibie(selectFileName)
+
+e = tkinter.StringVar()
+e_entry = tkinter.Entry(top, width=68, textvariable=e)
+e_entry.pack()
+
+choose_button = tkinter.Button(top, text="选择文件", command=choose_fiel)
+choose_button.pack()
+w = tkinter.Label(text=" ")
+w.pack()
+
+# 识别  卷积测试
+def start_shibie(img1):
+    img = Image.open(img1).convert('L')
+    flatten_img = np.reshape(img, (28, 28, 1))
+    input = tf.expand_dims(flatten_img, axis=0)
+    new_model = tf.keras.models.load_model('./the_mnist_conv_model.h5')
+    new_pred = new_model.predict(input)
+    new_pred = new_pred.tolist()
+    w["text"]=np.argmax(new_pred)
+
+top.mainloop()
