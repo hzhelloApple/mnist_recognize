@@ -1,0 +1,23 @@
+import tensorflow as tf
+import numpy as np
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# 处理成tensor
+x_train = tf.expand_dims(x_train , axis= -1)
+y_train = tf.keras.utils.to_categorical(y = y_train , num_classes= 10)
+train_data = tf.data.Dataset.from_tensor_slices((x_train , y_train)).batch(128)
+# 搭建网络模型
+input_x = tf.keras.Input(shape=[28 , 28 , 1] , name='in_1')
+conv = tf.keras.layers.Conv2D(filters=64 , kernel_size=[3 , 3] , padding='VALID' , activation=tf.nn.sigmoid)(input_x)
+conv = tf.keras.layers.BatchNormalization()(conv)
+conv = tf.keras.layers.MaxPool2D()(conv)
+conv = tf.keras.layers.Conv2D(filters=16 , kernel_size=[3 , 3] , padding='VALID' , activation=tf.nn.sigmoid)(conv)
+flat = tf.keras.layers.Flatten()(conv)
+process = tf.keras.layers.Dense(128 , activation='sigmoid' , name='d_1')(conv)
+outputs_label = tf.keras.layers.Dense(10 , activation='softmax' , name='output')(flat)
+model = tf.keras.Model(inputs = input_x , outputs = outputs_label)
+# 训练
+opt = tf.keras.optimizers.Adam(1e-3)
+model.compile(optimizer= opt , loss= tf.keras.losses.mse , metrics='accuracy')
+model.fit(train_data ,epochs=1)
+model.save('./the_mnist_conv_model.h5')
