@@ -1,0 +1,9 @@
+mnist = tf.keras.datasets.mnist
+(x_train , y_train) , (x_test , y_test) = mnist.load_data()
+new_model = tf.keras.models.load_model('./the_mnist_conv_model.h5')
+x_test = tf.expand_dims(x_test , axis= -1)
+y_test = tf.keras.utils.to_categorical(y = y_test , num_classes= 10)
+test_data = tf.data.Dataset.from_tensor_slices((x_test , y_test)).batch(128)
+score = new_model.evaluate(test_data)
+new_pred = new_model.predict(test_data)
+print(score)
