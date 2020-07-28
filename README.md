@@ -1,5 +1,4 @@
-# mnist-
-mnist识别
+# mnist-识别
 # 环境
 TensorFlow2.2.0
 # 网络
