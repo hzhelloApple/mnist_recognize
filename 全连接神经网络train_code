@@ -1,0 +1,20 @@
+import tensorflow as tf
+import numpy as np
+# 数据
+mnist = tf.keras.datasets.mnist
+(x_train , y_train) , (x_test , y_test) = mnist.load_data()
+# 处理数据
+x_train = x_train.reshape((60000 , 784))
+y_train = tf.keras.utils.to_categorical(y = y_train , num_classes= 10)
+# 网络模型
+input_x = tf.keras.Input(shape=(784 ,) , name="x_in")
+process = tf.keras.layers.Dense(128 , activation='sigmoid' , name= 'in_1')(input_x)
+# process = tf.keras.layers.Dense(64 , activation='relu' , name='in_2')(process)
+output_label = tf.keras.layers.Dense(10 , activation='softmax' , name='output_label')(process)
+model = tf.keras.Model(inputs = input_x , outputs = output_label)
+# 训练数据
+opt = tf.optimizers.Adam(1e-2)
+model.compile(optimizer= opt , loss=tf.keras.losses.mse, metrics= 'accuracy')
+train_data = tf.data.Dataset.from_tensor_slices((x_train , y_train)).batch(128)
+model.fit(train_data , epochs=200)
+model.save('./the_mnist_full-connect_model.h5')
